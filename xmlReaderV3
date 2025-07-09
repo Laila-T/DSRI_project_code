@@ -1,0 +1,44 @@
+import xml.etree.ElementTree as ET
+import numpy as np
+
+filename = '2015-07-07-1128-Subject01_Session1A.xml'
+
+with open(filename, 'r') as f:
+    content = f.read()
+
+content = "<root>" + content + "</root>"
+
+root = ET.fromstring(content)
+
+left_hand_transforms = []
+right_hand_transforms = []
+
+for log in root.iter('log'):
+    device_name = log.get('DeviceName')
+    if device_name == 'LeftHandToReference':
+        transform_str = log.get('transform')
+        if transform_str:
+            values = transform_str.strip().split()
+            first_12 = values[:12]
+            first_12_floats = list(map(float, first_12))
+            left_hand_transforms.append(first_12_floats)
+    elif device_name == 'RightHandToReference':
+        transform_str = log.get('transform')
+        if transform_str:
+            values = transform_str.strip().split()
+            first_12 = values[:12]
+            first_12_floats = list(map(float, first_12))
+            right_hand_transforms.append(first_12_floats)
+
+matrix = np.array(left_hand_transforms).T
+print("LH Shape of matrix before adding batch dim:", matrix.shape)
+
+matrix2 = np.array(right_hand_transforms).T
+print("RH Shape of matrix before adding batch dim:", matrix2.shape )
+
+# Add batch dimension for InceptionTime input
+matrix = np.expand_dims(matrix, axis=0)
+print("Shape of LH matrix after adding batch dim:", matrix.shape)
+
+matrix2 = np.expand_dims(matrix2, axis = 0)
+print("Shape of RH matrix after adding batch dim:", matrix2.shape)
