@@ -150,13 +150,19 @@ def main():
             print(f'\t\t\tdataset_name: {dataset_name}')
             x_train, y_train, x_test, y_test, y_true, nb_classes, y_true_train, enc = prepare_data(datasets_dict, dataset_name)
 
+            x_train = np.transpose(x_train, (0, 2, 1)) #Transpose to make InceptionTime perform convolution across time
+            x_test = np.transpose(x_test, (0, 2, 1))  #Transpose to make InceptionTime perform convolution across time
+            print("After transpose:", x_train.shape)  #DEBUG
+
+
             output_directory = tmp_output_directory + dataset_name + '\\'
             temp_output_directory = create_directory(output_directory)
             if temp_output_directory is None:
                 print('Already_done', tmp_output_directory, dataset_name)
             else:
                 input_shape = x_train.shape[1:]
-                classifier = create_classifier(classifier_name, input_shape, nb_classes, output_directory)
+                classifier = create_classifier(classifier_name, input_shape, nb_classes, 
+                                               output_directory)
                 fit_classifier(classifier, x_train, y_train, x_test, y_test, y_true)
                 print('\t\t\t\tDONE')
                 create_directory(output_directory + '/DONE')
@@ -176,6 +182,7 @@ def main():
         input_shape = x_train.shape[1:]
         classifier = create_classifier(classifier_name, input_shape, nb_classes, output_directory, clf_name = 'inception')
         print("Training starting..")
+        
 
         fit_classifier(classifier, x_train, y_train, x_test, y_test, y_true)
         print("Training completed")
@@ -203,10 +210,12 @@ def main():
                             trr = '_itr_' + str(iter)
                         print('\t\titer', iter)
 
-                        output_directory = os.path.join(root_dir,'results',classifier_name,xp,str(xp_val),archive_name + trr,dataset_name)
+                        output_directory = os.path.join(root_dir,'results',classifier_name,xp,str(xp_val),
+                                                        archive_name + trr,dataset_name)
 
                         print('\t\t\tdataset_name', dataset_name)
-                        x_train, y_train, x_test, y_test, y_true, nb_classes, y_true_train, enc = prepare_data(datasets_dict, dataset_name)
+                        x_train, y_train, x_test, y_test, y_true, nb_classes, y_true_train,
+                        enc = prepare_data(datasets_dict, dataset_name)
 
                         temp_output_directory = create_directory(output_directory)
                         if temp_output_directory is None:
@@ -249,7 +258,7 @@ def main():
                 classifier.fit(x_train, y_train, x_test, y_test, y_true)
 
 
-    
+
 
     elif mode == 'run_length_xps':
         print("run_length_xps mode not implemented yet.")
@@ -259,5 +268,8 @@ def main():
 
 if __name__ == "__main__":
     main()
+
+
+
 
 
