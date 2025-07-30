@@ -1,3 +1,7 @@
+# Adapted from the InceptionTime architecture by H. Fawaz et al.
+# Citation: H. I. Fawaz et al., "InceptionTime: Finding AlexNet for time series classification,"
+# Data Mining and Knowledge Discovery, vol. 34, pp. 1936–1962, Sep. 2020.
+
 from utils.constants import UNIVARIATE_ARCHIVE_NAMES as ARCHIVE_NAMES
 from load_motionsensehar import load_motionsensehar
 from utils.utils import transform_labels, create_directory
